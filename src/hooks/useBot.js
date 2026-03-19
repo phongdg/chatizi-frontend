@@ -110,7 +110,7 @@ export function useBot(botId) {
     const load = async () => {
       setLoading(true)
       try {
-        const res = await api.get(`/admin/tenants/${botId}`)
+        const res = await api.get(`/admin/bots/${botId}`)
         setBot(res.data)
       } catch {
         setBot(MOCK_BOTS.find((b) => b.id === botId) || MOCK_BOTS[0])
