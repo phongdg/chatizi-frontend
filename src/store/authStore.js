@@ -18,7 +18,7 @@ export const useAuthStore = create(
       },
       login: async (email, password) => {
         try {
-          const res = await api.post('/admin/auth/login', { email, password })
+          const res = await api.post('/admin/auth/login', { username: email, password })
           const { access_token, user } = res.data
           localStorage.setItem('chatizi_token', access_token)
           set({ token: access_token, user })
