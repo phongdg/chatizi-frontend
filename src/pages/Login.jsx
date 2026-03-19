@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 
 export default function Login() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -14,7 +14,7 @@ export default function Login() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const result = await login(email, password)
+    const result = await login(username, password)
     setLoading(false)
     if (result.ok) navigate('/dashboard')
     else setError(result.error)
@@ -49,13 +49,13 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5 font-medium">Email</label>
+              <label className="block text-xs text-gray-400 mb-1.5 font-medium">Username</label>
               <input
-                type="email"
+                type="text"
                 className="input"
-                placeholder="admin@chatizi.io"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -78,7 +78,7 @@ export default function Login() {
           </form>
 
           <p className="text-center text-xs text-gray-600 mt-5">
-            Demo: admin@chatizi.io / chatizi123
+            Demo: admin / chatizi123
           </p>
         </div>
       </div>
