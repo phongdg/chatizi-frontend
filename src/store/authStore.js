@@ -21,9 +21,9 @@ export const useAuthStore = create(
       login: async (email, password) => {
         try {
           const res = await api.post('/admin/auth/login', { username: email, password })
-          const { access_token, user } = res.data
+          const { access_token, username } = res.data
           localStorage.setItem('chatizi_token', access_token)
-          set({ token: access_token, user })
+          set({ token: access_token, user: { username } })
           return { ok: true }
         } catch (err) {
           // Mock login for dev when backend doesn't have auth yet
