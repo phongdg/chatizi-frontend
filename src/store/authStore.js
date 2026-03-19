@@ -40,8 +40,8 @@ export const useAuthStore = create(
     {
       name: 'chatizi-auth',
       partialize: (s) => ({ token: s.token, user: s.user }),
-      onRehydrateStorage: () => () => {
-        useAuthStore.getState().setHasHydrated(true)
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
       },
     }
   )
