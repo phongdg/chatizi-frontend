@@ -7,6 +7,8 @@ export const useAuthStore = create(
     (set) => ({
       token: null,
       user: null,
+      _hasHydrated: false,
+      setHasHydrated: (val) => set({ _hasHydrated: val }),
       setToken: (token) => {
         localStorage.setItem('chatizi_token', token)
         set({ token })
@@ -35,6 +37,18 @@ export const useAuthStore = create(
         }
       },
     }),
-    { name: 'chatizi-auth', partialize: (s) => ({ token: s.token, user: s.user }) }
+    {
+      name: 'chatizi-auth',
+      partialize: (s) => ({ token: s.token, user: s.user }),
+      onRehydrateStorage: () => () => {
+        useAuthStore.getState().setHasHydrated(true)
+      },
+    }
   )
 )
+
+// Listen for 401 logout signals dispatched by the API client.
+// Using an event avoids a circular import (client.js → authStore.js → client.js).
+window.addEventListener('auth:logout', () => {
+  useAuthStore.getState().logout()
+})

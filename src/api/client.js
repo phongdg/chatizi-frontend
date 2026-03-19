@@ -16,9 +16,9 @@ api.interceptors.response.use(
   (err) => {
     const isLoginRequest = err.config?.url?.includes('/auth/login')
     if (err.response?.status === 401 && !isLoginRequest) {
-      localStorage.removeItem('chatizi_token')
-      localStorage.removeItem('chatizi-auth') // clear Zustand persist so rehydration starts clean
-      window.location.href = '/login'
+      // Dispatch event so authStore clears its state; RequireAuth then redirects
+      // via React Router without a hard page reload (avoids hydration race condition).
+      window.dispatchEvent(new Event('auth:logout'))
     }
     return Promise.reject(err)
   }

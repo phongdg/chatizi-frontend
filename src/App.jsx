@@ -7,6 +7,8 @@ import NotFound from './pages/NotFound'
 
 function RequireAuth({ children }) {
   const token = useAuthStore((s) => s.token)
+  const hasHydrated = useAuthStore((s) => s._hasHydrated)
+  if (!hasHydrated) return null  // wait for persist to rehydrate before deciding
   if (!token) return <Navigate to="/login" replace />
   return children
 }
