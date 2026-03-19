@@ -51,7 +51,12 @@ export default function IntegrationsTab({ bot, onUpdate }) {
   const [values, setValues] = useState(() => {
     const init = {}
     CHANNELS.forEach((ch) => {
-      init[ch.enabledKey] = bot?.[ch.enabledKey] || false
+      if (ch.id === 'zalo') {
+        // zalo_enabled is not a real backend field; derive from channels array or zalo_oa_id
+        init[ch.enabledKey] = (bot?.channels || []).includes('zalo') || !!bot?.zalo_oa_id
+      } else {
+        init[ch.enabledKey] = bot?.[ch.enabledKey] || false
+      }
       ch.fields.forEach((f) => { init[f.key] = bot?.[f.key] || '' })
     })
     return init
@@ -66,6 +71,13 @@ export default function IntegrationsTab({ bot, onUpdate }) {
   const saveChannel = async (ch) => {
     const patch = { [ch.enabledKey]: values[ch.enabledKey] }
     ch.fields.forEach((f) => { patch[f.key] = values[f.key] })
+    if (ch.id === 'zalo') {
+      // Persist enabled state via the channels array — the authoritative backend field
+      const existing = bot?.channels || []
+      patch.channels = values[ch.enabledKey]
+        ? [...new Set([...existing, 'zalo'])]
+        : existing.filter((c) => c !== 'zalo')
+    }
     await onUpdate(patch)
     setSaved((s) => ({ ...s, [ch.id]: true }))
     setTimeout(() => setSaved((s) => ({ ...s, [ch.id]: false })), 2000)
