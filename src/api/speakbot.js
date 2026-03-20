@@ -1,4 +1,5 @@
 import axios from 'axios'
+import api from './client'
 
 // Speakbot base URL — hits the izi-speakbot microservice directly
 const SPEAKBOT_URL = import.meta.env.VITE_SPEAKBOT_URL || 'https://izi-speakbot-production-4695.up.railway.app'
@@ -11,7 +12,7 @@ const speakbotApi = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Authenticated instance for KB + admin operations (uses JWT Bearer token)
+// Authenticated instance for non-KB admin operations (uses JWT Bearer token)
 const speakbotAuthApi = axios.create({
   baseURL: SPEAKBOT_BASE_URL,
   timeout: 15000,
@@ -63,22 +64,22 @@ export const testTranslation = (sessionId, text, sourceLang, targetLang) =>
 export const getHealth = () =>
   speakbotApi.get('/health')
 
-// ── Knowledge Base (authenticated) ─────────────────────────────────────────
+// ── Knowledge Base — Chatizi backend (/admin/speakbot-kb) ──────────────────
 
 export const getKbDocuments = (tenantId) =>
-  speakbotAuthApi.get(`/kb/${tenantId}/documents`)
+  api.get(`/admin/speakbot-kb/${tenantId}/documents`)
 
-export const ingestUrl = (tenantId, url) =>
-  speakbotAuthApi.post(`/kb/${tenantId}/ingest-url`, { url })
+export const ingestUrl = (tenantId, url, title = null) =>
+  api.post(`/admin/speakbot-kb/${tenantId}/ingest-url`, { url, title })
 
-export const ingestText = (tenantId, text) =>
-  speakbotAuthApi.post(`/kb/${tenantId}/ingest-text`, { text })
+export const ingestText = (tenantId, content, title, docType = 'policy') =>
+  api.post(`/admin/speakbot-kb/${tenantId}/ingest-text`, { title, content, doc_type: docType })
 
 export const retrainKb = (tenantId) =>
   speakbotAuthApi.post(`/kb/${tenantId}/retrain`)
 
 export const deleteKbDoc = (tenantId, docId) =>
-  speakbotAuthApi.delete(`/kb/${tenantId}/documents/${docId}`)
+  api.delete(`/admin/speakbot-kb/${tenantId}/documents/${docId}`)
 
 // ── Session logs (authenticated) ────────────────────────────────────────────
 
